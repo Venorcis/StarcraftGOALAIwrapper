@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import goal.preferences.CorePreferences;
 import goal.tools.Run;
 import goal.tools.SingleRun;
 import goal.tools.errorhandling.exceptions.GOALRunFailedException;
@@ -47,6 +48,7 @@ public class Main {
 			final MASProgram mas = parse(mas2g.iterator().next(), env);
 			if (mas != null) {
 				try {
+					CorePreferences.setRemoveKilledAgent(true);
 					final SingleRun run = new SingleRun(mas);
 					run.run(true);
 				} catch (final GOALRunFailedException e) {
