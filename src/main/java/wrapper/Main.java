@@ -23,7 +23,7 @@ import languageTools.program.mas.MASProgram;
 import swiprolog.SwiInstaller;
 
 public class Main {
-	private final static String name = "";
+	private final static String name = "ExampleBotZerg";
 
 	public static void main(final String[] args) {
 		final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
