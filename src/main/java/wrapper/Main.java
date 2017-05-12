@@ -5,9 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -30,22 +31,24 @@ public class Main {
 		SwiInstaller.overrideDirectory(writedir.toString());
 		final Path agentdir = writedir.resolve(name);
 		try {
-			unzip(name, agentdir);
+			unzip(name + ".zip", agentdir);
 		} catch (final IOException e) {
 			e.printStackTrace();
 			return;
 		}
-		File env = null;
+		final Path env = writedir.resolve("connector.jar");
 		try {
-			env = new File(Thread.currentThread().getContextClassLoader().getResource("connector.jar").toURI());
-		} catch (final URISyntaxException e) {
+			final InputStream source = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(env.getFileName().toString());
+			Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return;
 		}
 
 		final SortedSet<File> mas2g = Run.getMASFiles(agentdir.toFile(), true);
 		if (mas2g.size() == 1) {
-			final MASProgram mas = parse(mas2g.iterator().next(), env);
+			final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
 			if (mas != null) {
 				try {
 					CorePreferences.setRemoveKilledAgent(true);
@@ -58,7 +61,7 @@ public class Main {
 				}
 			}
 		} else {
-			System.err.println("Found " + mas2g.size() + " test2g files in " + agentdir);
+			System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
 		}
 	}
 
@@ -68,7 +71,7 @@ public class Main {
 			deleteFolder(base);
 		}
 
-		System.out.println("unzipping " + zipfilename + " to " + base);
+		System.out.println("Unzipping " + zipfilename + " to " + base);
 		base.mkdir();
 
 		final InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(zipfilename);
@@ -120,7 +123,8 @@ public class Main {
 			mas2g.addInitParameter("auto_menu", "OFF");
 			mas2g.addInitParameter("debug", "false");
 			mas2g.addInitParameter("invulnerable", "false");
-			mas2g.addInitParameter("game_speed", "-1");
+			mas2g.addInitParameter("game_speed", 50);
+			mas2g.addInitParameter("own_race", "random");
 			return mas2g;
 		} else {
 			System.err.println(mas.getName() + " invalid: " + validator.getSyntaxErrors());
