@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,9 +24,16 @@ import languageTools.program.mas.MASProgram;
 import swiprolog.SwiInstaller;
 
 public class Main {
-	private final static String name = "ExampleBotZerg";
 
 	public static void main(final String[] args) {
+		String name;
+		try {
+			name = returnFilenameFromProperties();
+		} catch (final IOException e) {
+			//Might not have found the properties file
+			e.printStackTrace();
+			return;
+		}
 		final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
 		final Path writedir = working.getParent().resolve("write");
 		SwiInstaller.overrideDirectory(writedir.toString());
@@ -39,7 +47,7 @@ public class Main {
 		final Path env = writedir.resolve("connector.jar");
 		try {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(env.getFileName().toString());
+				.getResourceAsStream(env.getFileName().toString());
 			Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -63,6 +71,13 @@ public class Main {
 		} else {
 			System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
 		}
+	}
+
+	private static String returnFilenameFromProperties() throws IOException {
+		java.io.InputStream is = Main.class.getClassLoader().getResourceAsStream("my.properties");
+		java.util.Properties p = new Properties();
+		p.load(is);
+		return p.getProperty("filename");
 	}
 
 	private static File unzip(final String zipfilename, final Path path) throws IOException {
