@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -25,8 +26,14 @@ import swiprolog.SwiInstaller;
 public class Main {
 
 	public static void main(final String[] args) {
-		if(args.length > 0 ) {
-			String name = args[0];
+			String name;
+			try{
+				name = returnFilenameFromProperties();
+			}catch(final IOException e){
+				//Might not have found the properties file
+				e.printStackTrace();
+				return;
+			}
 			final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
 			final Path writedir = working.getParent().resolve("write");
 			SwiInstaller.overrideDirectory(writedir.toString());
@@ -64,9 +71,12 @@ public class Main {
 			} else {
 				System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
 			}
-		}else{
-			throw new IllegalArgumentException();
-		}
+	}
+	private static String returnFilenameFromProperties() throws IOException{
+		java.io.InputStream is = Main.class.getClassLoader().getResourceAsStream("my.properties");
+		java.util.Properties p = new Properties();
+		p.load(is);
+		return p.getProperty("filename");
 	}
 
 	private static File unzip(final String zipfilename, final Path path) throws IOException {
