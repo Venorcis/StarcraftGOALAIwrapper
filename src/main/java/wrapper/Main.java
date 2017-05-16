@@ -23,45 +23,49 @@ import languageTools.program.mas.MASProgram;
 import swiprolog.SwiInstaller;
 
 public class Main {
-	private final static String name = "ExampleBotZerg";
 
 	public static void main(final String[] args) {
-		final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
-		final Path writedir = working.getParent().resolve("write");
-		SwiInstaller.overrideDirectory(writedir.toString());
-		final Path agentdir = writedir.resolve(name);
-		try {
-			unzip(name + ".zip", agentdir);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		final Path env = writedir.resolve("connector.jar");
-		try {
-			final InputStream source = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(env.getFileName().toString());
-			Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		final SortedSet<File> mas2g = Run.getMASFiles(agentdir.toFile(), true);
-		if (mas2g.size() == 1) {
-			final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
-			if (mas != null) {
-				try {
-					CorePreferences.setRemoveKilledAgent(true);
-					final SingleRun run = new SingleRun(mas);
-					run.run(true);
-				} catch (final GOALRunFailedException e) {
-					e.printStackTrace();
-				} finally {
-					System.exit(0);
-				}
+		if(args.length > 0 ) {
+			String name = args[0];
+			final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
+			final Path writedir = working.getParent().resolve("write");
+			SwiInstaller.overrideDirectory(writedir.toString());
+			final Path agentdir = writedir.resolve(name);
+			try {
+				unzip(name + ".zip", agentdir);
+			} catch (final IOException e) {
+				e.printStackTrace();
+				return;
 			}
-		} else {
-			System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
+			final Path env = writedir.resolve("connector.jar");
+			try {
+				final InputStream source = Thread.currentThread().getContextClassLoader()
+						.getResourceAsStream(env.getFileName().toString());
+				Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
+			} catch (final IOException e) {
+				e.printStackTrace();
+				return;
+			}
+
+			final SortedSet<File> mas2g = Run.getMASFiles(agentdir.toFile(), true);
+			if (mas2g.size() == 1) {
+				final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
+				if (mas != null) {
+					try {
+						CorePreferences.setRemoveKilledAgent(true);
+						final SingleRun run = new SingleRun(mas);
+						run.run(true);
+					} catch (final GOALRunFailedException e) {
+						e.printStackTrace();
+					} finally {
+						System.exit(0);
+					}
+				}
+			} else {
+				System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
+			}
+		}else{
+			throw new IllegalArgumentException();
 		}
 	}
 
