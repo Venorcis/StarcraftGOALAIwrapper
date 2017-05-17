@@ -30,7 +30,7 @@ public class Main {
 		try {
 			name = returnFilenameFromProperties();
 		} catch (final IOException e) {
-			//Might not have found the properties file
+			// Might not have found the properties file
 			e.printStackTrace();
 			return;
 		}
@@ -47,7 +47,7 @@ public class Main {
 		final Path env = writedir.resolve("connector.jar");
 		try {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(env.getFileName().toString());
+					.getResourceAsStream(env.getFileName().toString());
 			Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -140,6 +140,7 @@ public class Main {
 			mas2g.addInitParameter("invulnerable", "false");
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
+			mas2g.addInitParameter("starcraft_location", "C:\\Starcraft");
 			return mas2g;
 		} else {
 			System.err.println(mas.getName() + " invalid: " + validator.getSyntaxErrors());
