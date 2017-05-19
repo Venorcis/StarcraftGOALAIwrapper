@@ -30,7 +30,6 @@ public class Main {
 		try {
 			name = returnFilenameFromProperties();
 		} catch (final IOException e) {
-			// Might not have found the properties file
 			e.printStackTrace();
 			return;
 		}
@@ -74,8 +73,8 @@ public class Main {
 	}
 
 	private static String returnFilenameFromProperties() throws IOException {
-		java.io.InputStream is = Main.class.getClassLoader().getResourceAsStream("my.properties");
-		java.util.Properties p = new Properties();
+		final InputStream is = Main.class.getClassLoader().getResourceAsStream("my.properties");
+		final Properties p = new Properties();
 		p.load(is);
 		return p.getProperty("filename");
 	}
