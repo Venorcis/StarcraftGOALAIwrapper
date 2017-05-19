@@ -1,6 +1,7 @@
 package wrapper;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -86,23 +87,27 @@ public class Main {
 		}
 
 		System.out.println("Unzipping " + zipfilename + " to " + base);
-		base.mkdir();
+		base.mkdirs();
 
 		final InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(zipfilename);
 		final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
 		ZipEntry entry = null;
-		byte[] buffer = new byte[2048];
 		while ((entry = zis.getNextEntry()) != null) {
-			final File fileInDir = new File(base, entry.getName());
+			final File file = new File(base, entry.getName());
 			if (entry.isDirectory()) {
-				fileInDir.mkdir();
-			} else if (!fileInDir.canRead()) {
-				final FileOutputStream fOutput = new FileOutputStream(fileInDir);
-				int count = 0;
-				while ((count = zis.read(buffer)) > 0) {
-					fOutput.write(buffer, 0, count);
+				file.mkdirs();
+			} else {
+				final File parent = file.getParentFile();
+				if (!parent.exists()) {
+					parent.mkdirs();
 				}
-				fOutput.close();
+				final BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+				byte[] buffer = new byte[4096];
+				int count = -1;
+				while ((count = zis.read(buffer)) > 0) {
+					out.write(buffer, 0, count);
+				}
+				out.close();
 			}
 			zis.closeEntry();
 		}
