@@ -27,23 +27,26 @@ import swiprolog.SwiInstaller;
 public class Main {
 
 	public static void main(final String[] args) {
-		String name;
-		try {
-			name = returnFilenameFromProperties();
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		final Path working = Paths.get(System.getProperty("user.dir")); // bwapi-data/AI
+		// Get the current working directory (assumed to be set properly)
+		// [bwapi-data/AI]
+		final Path working = Paths.get(System.getProperty("user.dir"));
 		final Path writedir = working.getParent().resolve("write");
-		SwiInstaller.overrideDirectory(writedir.toString());
-		final Path agentdir = writedir.resolve(name);
+		// Make sure SWI is extracted to a specific directory when running
+		// [bwapi-data/write/swi]
+		SwiInstaller.overrideDirectory(writedir.resolve("swi").toString());
+		// Get the agent code ZIP resource and extract it to its own directory
+		// [bwapi-data/write/%name%]
+		Path agentdir;
 		try {
+			final String name = returnFilenameFromProperties();
+			agentdir = writedir.resolve(name);
 			unzip(name + ".zip", agentdir);
 		} catch (final IOException e) {
 			e.printStackTrace();
 			return;
 		}
+		// Copy the connector.jar resource to its expected place
+		// [bwapi-data/write]
 		final Path env = writedir.resolve("connector.jar");
 		try {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
@@ -54,6 +57,8 @@ public class Main {
 			return;
 		}
 
+		// Check if we have 1 mas2g and if it is error-free;
+		// if it is, then modify its init parameters, and run it :)
 		final SortedSet<File> mas2g = Run.getMASFiles(agentdir.toFile(), true);
 		if (mas2g.size() == 1) {
 			final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
