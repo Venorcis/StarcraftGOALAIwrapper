@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -38,7 +37,7 @@ public class Main {
 		// [bwapi-data/write/%name%]
 		Path agentdir;
 		try {
-			final String name = returnFilenameFromProperties();
+			final String name = "Bot";
 			agentdir = writedir.resolve(name);
 			unzip(name + ".zip", agentdir);
 		} catch (final IOException e) {
@@ -76,13 +75,6 @@ public class Main {
 		} else {
 			System.err.println("Found " + mas2g.size() + " mas2g files in " + agentdir);
 		}
-	}
-
-	private static String returnFilenameFromProperties() throws IOException {
-		final InputStream is = Main.class.getClassLoader().getResourceAsStream("my.properties");
-		final Properties p = new Properties();
-		p.load(is);
-		return p.getProperty("filename");
 	}
 
 	private static File unzip(final String zipfilename, final Path path) throws IOException {
