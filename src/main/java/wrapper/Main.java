@@ -135,6 +135,7 @@ public class Main {
 			validator.process();
 			final MASProgram mas2g = validator.getProgram();
 			mas2g.setEnvironmentfile(env);
+			final Object mapagent = mas2g.getInitParameters().get("map_agent");
 			mas2g.resetInitParameters();
 			mas2g.addInitParameter("auto_menu", "OFF");
 			mas2g.addInitParameter("debug", "false");
@@ -142,6 +143,9 @@ public class Main {
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
 			mas2g.addInitParameter("starcraft_location", "C:\\Starcraft");
+			if ("true".equals(mapagent)) {
+				mas2g.addInitParameter("map_agent", mapagent);
+			}
 			return mas2g;
 		} else {
 			System.err.println(mas.getName() + " invalid: " + validator.getSyntaxErrors());
