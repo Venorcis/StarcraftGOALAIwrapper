@@ -142,7 +142,7 @@ public class Main {
 			mas2g.addInitParameter("invulnerable", "false");
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
-			mas2g.addInitParameter("starcraft_location", "C:\\Starcraft");
+			mas2g.addInitParameter("starcraft_location", "");
 			if ("true".equals(mapagent)) {
 				mas2g.addInitParameter("map_agent", mapagent);
 			}
