@@ -5,3 +5,5 @@
 /.settings/
 .idea/
 starcraftgoalaiwrapper.iml
+*.zip
+/tournamentBots/
