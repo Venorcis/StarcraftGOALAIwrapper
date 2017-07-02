@@ -136,6 +136,8 @@ public class Main {
 			final MASProgram mas2g = validator.getProgram();
 			mas2g.setEnvironmentfile(env);
 			final Object mapagent = mas2g.getInitParameters().get("map_agent");
+			final Object mapinfo = mas2g.getInitParameters().get("draw_mapinfo");
+			final Object unitinfo = mas2g.getInitParameters().get("draw_unitinfo");
 			mas2g.resetInitParameters();
 			mas2g.addInitParameter("auto_menu", "OFF");
 			mas2g.addInitParameter("debug", "false");
@@ -145,6 +147,12 @@ public class Main {
 			mas2g.addInitParameter("starcraft_location", "");
 			if ("true".equals(mapagent)) {
 				mas2g.addInitParameter("map_agent", mapagent);
+			}
+			if ("true".equals(mapinfo)) {
+				mas2g.addInitParameter("draw_mapinfo", mapinfo);
+			}
+			if ("true".equals(unitinfo)) {
+				mas2g.addInitParameter("draw_unitinfo", unitinfo);
 			}
 			return mas2g;
 		} else {
