@@ -27,26 +27,21 @@ public class Main {
 
 	public static void main(final String[] args) {
 		// Get the current working directory (assumed to be set properly)
-		// [bwapi-data/AI]
 		final Path working = Paths.get(System.getProperty("user.dir"));
-		final Path writedir = working.getParent().resolve("write");
 		// Make sure SWI is extracted to a specific directory when running
-		// [bwapi-data/write/swi]
-		SwiInstaller.overrideDirectory(writedir.resolve("swi").toString());
+		SwiInstaller.overrideDirectory(working.resolve("swi").toString());
 		// Get the agent code ZIP resource and extract it to its own directory
-		// [bwapi-data/write/%name%]
 		Path agentdir;
 		try {
 			final String name = "Bot";
-			agentdir = writedir.resolve(name);
+			agentdir = working.resolve(name);
 			unzip(name + ".zip", agentdir);
 		} catch (final IOException e) {
 			e.printStackTrace();
 			return;
 		}
-		// Copy the connector.jar resource to its expected place
-		// [bwapi-data/write]
-		final Path env = writedir.resolve("connector.jar");
+		// Copy the connector.jar resource to the agent code directory
+		final Path env = agentdir.resolve("connector.jar");
 		try {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(env.getFileName().toString());
@@ -57,7 +52,7 @@ public class Main {
 		}
 
 		// Check if we have 1 mas2g and if it is error-free;
-		// if it is, then modify its init parameters, and run it :)
+		// if it is, then fix its init parameters, and run it :)
 		final SortedSet<File> mas2g = Run.getMASFiles(agentdir.toFile(), true);
 		if (mas2g.size() == 1) {
 			final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
@@ -82,8 +77,6 @@ public class Main {
 		if (base.exists()) {
 			deleteFolder(base);
 		}
-
-		System.out.println("Unzipping " + zipfilename + " to " + base);
 		base.mkdirs();
 
 		final InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(zipfilename);
@@ -145,13 +138,13 @@ public class Main {
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
 			mas2g.addInitParameter("starcraft_location", "");
-			if ("true".equals(mapagent)) {
+			if ("true".equals(mapagent) || "false".equals(mapagent)) {
 				mas2g.addInitParameter("map_agent", mapagent);
 			}
-			if ("true".equals(mapinfo)) {
+			if ("true".equals(mapinfo) || "false".equals(mapinfo)) {
 				mas2g.addInitParameter("draw_mapinfo", mapinfo);
 			}
-			if ("true".equals(unitinfo)) {
+			if ("true".equals(unitinfo) || "false".equals(unitinfo)) {
 				mas2g.addInitParameter("draw_unitinfo", unitinfo);
 			}
 			return mas2g;
