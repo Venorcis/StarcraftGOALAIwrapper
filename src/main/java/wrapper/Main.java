@@ -1,3 +1,4 @@
+
 package wrapper;
 
 import java.io.BufferedInputStream;
@@ -128,9 +129,10 @@ public class Main {
 			validator.process();
 			final MASProgram mas2g = validator.getProgram();
 			mas2g.setEnvironmentfile(env);
-			final Object mapagent = mas2g.getInitParameters().get("map_agent");
 			final Object mapinfo = mas2g.getInitParameters().get("draw_mapinfo");
 			final Object unitinfo = mas2g.getInitParameters().get("draw_unitinfo");
+			final Object managers = mas2g.getInitParameters().get("managers");
+			final Object percepts = mas2g.getInitParameters().get("percepts");
 			mas2g.resetInitParameters();
 			mas2g.addInitParameter("auto_menu", "OFF");
 			mas2g.addInitParameter("debug", "false");
@@ -138,14 +140,17 @@ public class Main {
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
 			mas2g.addInitParameter("starcraft_location", "");
-			if ("true".equals(mapagent) || "false".equals(mapagent)) {
-				mas2g.addInitParameter("map_agent", mapagent);
-			}
 			if ("true".equals(mapinfo) || "false".equals(mapinfo)) {
 				mas2g.addInitParameter("draw_mapinfo", mapinfo);
 			}
 			if ("true".equals(unitinfo) || "false".equals(unitinfo)) {
 				mas2g.addInitParameter("draw_unitinfo", unitinfo);
+			}
+			if (managers != null) {
+				mas2g.addInitParameter("managers", managers);
+			}
+			if (percepts != null) {
+				mas2g.addInitParameter("percepts", percepts);
 			}
 			return mas2g;
 		} else {
