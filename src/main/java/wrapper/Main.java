@@ -1,3 +1,4 @@
+
 package wrapper;
 
 import java.io.BufferedInputStream;
@@ -6,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,10 +26,23 @@ import languageTools.program.mas.MASProgram;
 import swiprolog.SwiInstaller;
 
 public class Main {
-
 	public static void main(final String[] args) {
-		// Get the current working directory (assumed to be set properly)
-		final Path working = Paths.get(System.getProperty("user.dir"));
+		// Get the directory the JAR is located in (assumed to be bwapi-data/AI)
+		Path working;
+		try {
+			working = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		// NEW logging
+		final Path write = working.getParent().resolve("write");
+		try {
+			System.setOut(new PrintStream(new FileOutputStream(write.resolve("stdout.log").toFile())));
+			System.setErr(new PrintStream(new FileOutputStream(write.resolve("stderr.log").toFile())));
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 		// Make sure SWI is extracted to a specific directory when running
 		SwiInstaller.overrideDirectory(working.resolve("swi").toString());
 		// Get the agent code ZIP resource and extract it to its own directory
@@ -36,7 +51,7 @@ public class Main {
 			final String name = "Bot";
 			agentdir = working.resolve(name);
 			unzip(name + ".zip", agentdir);
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return;
 		}
@@ -45,10 +60,11 @@ public class Main {
 		try {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(env.getFileName().toString());
-			Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
-		} catch (final IOException e) {
+			if (source != null) {
+				Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
+			}
+		} catch (final Exception e) {
 			e.printStackTrace();
-			return;
 		}
 
 		// Check if we have 1 mas2g and if it is error-free;
@@ -74,51 +90,34 @@ public class Main {
 
 	private static File unzip(final String zipfilename, final Path path) throws IOException {
 		final File base = path.toFile();
-		if (base.exists()) {
-			deleteFolder(base);
-		}
-		base.mkdirs();
-
-		final InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(zipfilename);
-		final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-		ZipEntry entry = null;
-		while ((entry = zis.getNextEntry()) != null) {
-			final File file = new File(base, entry.getName());
-			if (entry.isDirectory()) {
-				file.mkdirs();
-			} else {
-				final File parent = file.getParentFile();
-				if (!parent.exists()) {
-					parent.mkdirs();
-				}
-				final BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-				byte[] buffer = new byte[4096];
-				int count = -1;
-				while ((count = zis.read(buffer)) > 0) {
-					out.write(buffer, 0, count);
-				}
-				out.close();
-			}
-			zis.closeEntry();
-		}
-		zis.close();
-		fis.close();
-
-		return base;
-	}
-
-	private static void deleteFolder(final File folder) {
-		final File[] files = folder.listFiles();
-		if (files != null) {
-			for (final File f : files) {
-				if (f.isDirectory()) {
-					deleteFolder(f);
+		if (!base.exists()) {
+			base.mkdirs();
+			final InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(zipfilename);
+			final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+			ZipEntry entry = null;
+			while ((entry = zis.getNextEntry()) != null) {
+				final File file = new File(base, entry.getName());
+				if (entry.isDirectory()) {
+					file.mkdirs();
 				} else {
-					f.delete();
+					final File parent = file.getParentFile();
+					if (!parent.exists()) {
+						parent.mkdirs();
+					}
+					final BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+					byte[] buffer = new byte[4096];
+					int count = -1;
+					while ((count = zis.read(buffer)) > 0) {
+						out.write(buffer, 0, count);
+					}
+					out.close();
 				}
+				zis.closeEntry();
 			}
+			zis.close();
+			fis.close();
 		}
-		folder.delete();
+		return base;
 	}
 
 	private static MASProgram parse(final File mas, final File env) {
@@ -128,9 +127,10 @@ public class Main {
 			validator.process();
 			final MASProgram mas2g = validator.getProgram();
 			mas2g.setEnvironmentfile(env);
-			final Object mapagent = mas2g.getInitParameters().get("map_agent");
 			final Object mapinfo = mas2g.getInitParameters().get("draw_mapinfo");
 			final Object unitinfo = mas2g.getInitParameters().get("draw_unitinfo");
+			final Object managers = mas2g.getInitParameters().get("managers");
+			final Object percepts = mas2g.getInitParameters().get("percepts");
 			mas2g.resetInitParameters();
 			mas2g.addInitParameter("auto_menu", "OFF");
 			mas2g.addInitParameter("debug", "false");
@@ -138,14 +138,17 @@ public class Main {
 			mas2g.addInitParameter("game_speed", 50);
 			mas2g.addInitParameter("own_race", "random");
 			mas2g.addInitParameter("starcraft_location", "");
-			if ("true".equals(mapagent) || "false".equals(mapagent)) {
-				mas2g.addInitParameter("map_agent", mapagent);
-			}
 			if ("true".equals(mapinfo) || "false".equals(mapinfo)) {
 				mas2g.addInitParameter("draw_mapinfo", mapinfo);
 			}
 			if ("true".equals(unitinfo) || "false".equals(unitinfo)) {
 				mas2g.addInitParameter("draw_unitinfo", unitinfo);
+			}
+			if (managers != null) {
+				mas2g.addInitParameter("managers", managers);
+			}
+			if (percepts != null) {
+				mas2g.addInitParameter("percepts", percepts);
 			}
 			return mas2g;
 		} else {
