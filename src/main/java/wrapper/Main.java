@@ -11,7 +11,6 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.SortedSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,7 +40,7 @@ public class Main {
 			System.setOut(new PrintStream(new FileOutputStream(write.resolve("stdout.log").toFile())));
 			System.setErr(new PrintStream(new FileOutputStream(write.resolve("stderr.log").toFile())));
 		} catch (final Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		// Make sure SWI is extracted to a specific directory when running
 		SwiInstaller.overrideDirectory(working.resolve("swi").toString());
@@ -61,10 +60,10 @@ public class Main {
 			final InputStream source = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(env.getFileName().toString());
 			if (source != null) {
-				Files.copy(source, env, StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(source, env);
 			}
 		} catch (final Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 
 		// Check if we have 1 mas2g and if it is error-free;
