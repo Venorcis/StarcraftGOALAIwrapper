@@ -1,1 +1,1 @@
-java -Xms512M -Xmx1024M -jar bwapi-data\AI\starcraftgoalaiwrapper-0.0.1-SNAPSHOT-shaded.jar
+java -Xms512M -Xmx1024M -jar bwapi-data\AI\starcraftgoalaiwrapper-0.0.1-shaded.jar
