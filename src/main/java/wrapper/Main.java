@@ -74,6 +74,9 @@ public class Main {
 			if (mas != null) {
 				try {
 					CorePreferences.setRemoveKilledAgent(true);
+					if (args.length > 0) {
+						CorePreferences.setMaxThreads(Integer.parseInt(args[0]));
+					}
 					final SingleRun run = new SingleRun(mas);
 					run.run(true);
 				} catch (final GOALRunFailedException e) {
