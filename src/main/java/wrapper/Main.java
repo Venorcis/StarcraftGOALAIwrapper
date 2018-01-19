@@ -75,7 +75,7 @@ public class Main {
 				try {
 					CorePreferences.setRemoveKilledAgent(true);
 					if (args.length > 0) {
-						CorePreferences.setMaxThreads(Integer.parseInt(args[0]));
+						CorePreferences.setSequentialExecution(true);
 					}
 					final SingleRun run = new SingleRun(mas);
 					run.run(true);
