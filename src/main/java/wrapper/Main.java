@@ -74,7 +74,7 @@ public class Main {
 			if (mas != null) {
 				try {
 					CorePreferences.setRemoveKilledAgent(true);
-					if (args.length > 0) {
+					if (args.length == 0) {
 						CorePreferences.setSequentialExecution(true);
 					}
 					final SingleRun run = new SingleRun(mas);
