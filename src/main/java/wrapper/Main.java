@@ -123,7 +123,8 @@ public class Main {
 	}
 
 	private static MASProgram parse(final File mas, final File env) {
-		final MASValidator validator = new MASValidator(mas.getPath(), new FileRegistry());
+		final FileRegistry registry = new FileRegistry();
+		final MASValidator validator = new MASValidator(mas.getPath(), registry);
 		validator.validate();
 		if (validator.getProgram() != null) {
 			validator.process();
@@ -154,7 +155,7 @@ public class Main {
 			}
 			return mas2g;
 		} else {
-			System.err.println(mas.getName() + " invalid: " + validator.getSyntaxErrors());
+			System.err.println(mas.getName() + " invalid: " + registry.getAllErrors());
 			return null;
 		}
 	}
