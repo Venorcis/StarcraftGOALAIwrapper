@@ -11,7 +11,7 @@ if not exist %zip% exit /B 404
 call :sub %zip%
 
 START "" /wait cmd /c "copy %zip% .\src\main\resources\Bot.zip"
-START "" /wait cmd /c "mvn clean package -U"
+START "" /wait cmd /c "mvn clean package"
 START "" /wait cmd /c "robocopy /e Template Bot"
 START "" /wait cmd /c "copy .\target\starcraftgoalaiwrapper-0.0.2-SNAPSHOT-shaded.jar .\Bot\AI"
 START "" /wait cmd /c "copy NUL .\Bot\AI\%name%.dll"
