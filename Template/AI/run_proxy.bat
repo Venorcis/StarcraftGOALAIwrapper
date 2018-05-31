@@ -1,1 +1,1 @@
-java -XX:-CreateMinidumpOnCrash -XX:+UseG1GC -Xms128M -Xmx1024M -jar bwapi-data\AI\starcraftgoalaiwrapper-0.0.2-SNAPSHOT-shaded.jar 0
+java -XX:-CreateMinidumpOnCrash -XX:+UseG1GC -XX:+UseStringDeduplication -Xms128M -Xmx1024M -jar bwapi-data\AI\starcraftgoalaiwrapper-0.0.2-SNAPSHOT-shaded.jar 0
