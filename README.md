@@ -5,4 +5,4 @@
 
 For _SSCAIT_ submissions, move the contents of the AI directory to the ZIP's main directory, remove the run_proxy.bat file, and add the BWAPI.dll file from the repo's main directory. Select 'JAR made with JNIBWAPI (Java)' in the submission form at http://sscaitournament.com/index.php?action=submit
 
-We do not recommend enabling the 'draw_mapinfo' parameter in any release version (i.e. for SSCAIT) as it involves relatively performance intensive draws. Enabling 'draw_unitinfo' shouldn't be a problem. Any other init parameter (besides 'map_agent') is automatically set.
+We do not recommend enabling the 'draw_mapinfo' parameter in any release version (i.e. for SSCAIT) as it involves relatively performance intensive draws. Enabling 'draw_unitinfo' shouldn't be a problem. Any other init parameter (besides 'managers' and 'percepts') is automatically set.
