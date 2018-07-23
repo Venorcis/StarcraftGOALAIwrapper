@@ -74,7 +74,7 @@ public class Main {
 			final MASProgram mas = parse(mas2g.iterator().next(), env.toFile());
 			if (mas != null) {
 				try {
-					DebugPreferences.initPrefs(Run.getDefaultPrefs());
+					DebugPreferences.setDefault(Run.getDefaultPrefs());
 					CorePreferences.setRemoveKilledAgent(true);
 					if (args.length == 0) { // SSCAIT (single-core)
 						CorePreferences.setSequentialExecution(true);
